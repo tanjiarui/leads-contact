@@ -14,29 +14,29 @@ app.debug = True
 #####
 # services initialization
 #####
+access_key_id = 'AKIAVPRXNHVE3Z7UU3AQ'
+secret_access_key = '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'
 storage_location = 's3-bucket-terry'
-storage_service = storage_service.Storage(storage_location)
-recognition_service = recognition_service.Recognition(storage_service)
-comprehend_service = comprehend_service.Comprehend()
-db = dynamoDB.DB()
+storage_service = storage_service.Storage(storage_location, access_key_id, secret_access_key)
+recognition_service = recognition_service.Recognition(storage_service, access_key_id, secret_access_key)
+comprehend_service = comprehend_service.Comprehend(access_key_id, secret_access_key)
+db = dynamoDB.DB(access_key_id, secret_access_key)
 
 
 #####
 # RESTful endpoints
 #####
-@app.route('/images', methods=['post'], cors=True)
+@app.route('/images', methods=['POST'], cors=True)
 def upload_image():
 	# processes file upload and saves file to storage service
 	request_data = json.loads(app.current_request.raw_body)
 	file_name = request_data['filename']
 	file_bytes = base64.b64decode(request_data['filebytes'])
-
 	image_info = storage_service.upload_file(file_bytes, file_name)
-
 	return image_info
 
 
-@app.route('/images/{image_id}/detect-text', methods=['get'], cors=True)
+@app.route('/images/{image_id}/detect-text', methods=['GET'], cors=True)
 def detect_text(image_id):
 	# image to text and extract Personally identifiable information
 	card = recognition_service.detect_text(image_id)
@@ -44,7 +44,7 @@ def detect_text(image_id):
 	return identifiable_information
 
 
-@app.route('/contacts/{image_id}/save-text', methods=['post'], cors=True)
+@app.route('/contacts/{image_id}/save-text', methods=['POST'], cors=True)
 def save_text(image_id):
 	# upload an item
 	# format of request body {'name', 'phone', 'email', 'website', 'address'}
@@ -53,13 +53,13 @@ def save_text(image_id):
 	return db.insert_item(item)
 
 
-@app.route('/contacts/{image_id}/find-text', methods=['get'], cors=True)
+@app.route('/contacts/{image_id}/find-text', methods=['GET'], cors=True)
 def find_text(image_id):
 	# find an item
 	return db.find_item(image_id)
 
 
-@app.route('/contacts/{image_id}/update-text', methods=['update'], cors=True)
+@app.route('/contacts/{image_id}/update-text', methods=['PUT'], cors=True)
 def update_text(image_id):
 	# update an item
 	# format of request body {'name', 'phone', 'email', 'website', 'address'}
@@ -68,7 +68,7 @@ def update_text(image_id):
 	db.update_item(item)
 
 
-@app.route('/contacts/{image_id}/delete-text', methods=['delete'], cors=True)
+@app.route('/contacts/{image_id}/delete-text', methods=['DELETE'], cors=True)
 def delete_text(image_id):
 	# delete an item
 	return db.delete_item(image_id)

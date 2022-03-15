@@ -2,8 +2,8 @@ import boto3
 
 
 class DB:
-	def __init__(self):
-		dynamodb = boto3.resource('dynamodb', aws_access_key_id='AKIAVPRXNHVE3Z7UU3AQ', aws_secret_access_key='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')
+	def __init__(self, access_key_id, secret_access_key):
+		dynamodb = boto3.resource('dynamodb', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
 		self.table = dynamodb.Table('datastore')
 
 	def insert_item(self, item: dict):

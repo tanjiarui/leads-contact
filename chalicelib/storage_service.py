@@ -2,8 +2,8 @@ import boto3
 
 
 class Storage:
-	def __init__(self, storage_location):
-		self.client = boto3.client('s3')
+	def __init__(self, storage_location, access_key_id, secret_access_key):
+		self.client = boto3.client('s3', aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
 		self.bucket_name = storage_location
 
 	def get_storage_location(self):
