@@ -23,9 +23,9 @@ comprehend_service = comprehend_service.Comprehend(access_key_id, secret_access_
 db = dynamoDB.DB(access_key_id, secret_access_key)
 
 
-#####
-# RESTful endpoints
-#####
+####
+# restful endpoints
+####
 @app.route('/images', methods=['POST'], cors=True)
 def upload_image():
 	# processes file upload and saves file to storage service
@@ -47,16 +47,18 @@ def detect_text(image_id):
 @app.route('/contacts/{image_id}/save-text', methods=['POST'], cors=True)
 def save_text(image_id):
 	# upload an item
-	# format of request body {'name', 'phone', 'email', 'website', 'address'}
+	# format of request body {name: '', phone: '', email: '', website: '', address: ''}
 	request_data = json.loads(app.current_request.raw_body)
-	item = {'id': image_id, 'name': request_data['name'], 'phone': request_data['phone'], 'email': request_data['email'], 'website': request_data['website'], 'address': request_data['address']}
+	item = {'id': image_id, 'username': request_data['name'], 'phone': request_data['phone'], 'email': request_data['email'], 'website': request_data['website'], 'address': request_data['address']}
 	return db.insert_item(item)
 
 
-@app.route('/contacts/{image_id}/find-text', methods=['GET'], cors=True)
-def find_text(image_id):
-	# find an item
-	return db.find_item(image_id)
+@app.route('/contacts/find-text', methods=['POST'], cors=True)
+def find_text():
+	# find an item by name
+	# format of request body {name: ''}
+	request_data = json.loads(app.current_request.raw_body)
+	return db.find_item(request_data['name'])
 
 
 @app.route('/contacts/{image_id}/update-text', methods=['PUT'], cors=True)
@@ -65,7 +67,7 @@ def update_text(image_id):
 	# format of request body {'name', 'phone', 'email', 'website', 'address'}
 	request_data = json.loads(app.current_request.raw_body)
 	item = {'id': image_id, 'name': request_data['name'], 'phone': request_data['phone'], 'email': request_data['email'], 'website': request_data['website'], 'address': request_data['address']}
-	db.update_item(item)
+	return db.update_item(item)
 
 
 @app.route('/contacts/{image_id}/delete-text', methods=['DELETE'], cors=True)

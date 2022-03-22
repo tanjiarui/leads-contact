@@ -10,9 +10,13 @@ class DB:
 		response = self.table.put_item(Item=item)
 		return response
 
-	def find_item(self, item_id: str):
-		response = self.table.get_item(Key={'id': item_id})
-		return response['Item']
+	def find_item(self, name: str):
+		response = self.table.scan()
+		result = list()
+		for item in response['Items']:
+			if item['username'] == name:
+				result.append(item)
+		return result if result else {'warning': 'no such item in db'}
 
 	def update_item(self, item: dict):
 		response = self.table.update_item(
