@@ -40,8 +40,15 @@ def upload_image():
 def detect_text(image_id):
 	# image to text and extract Personally identifiable information
 	card = recognition_service.detect_text(image_id)
-	identifiable_information = comprehend_service.detect_pii(card)
-	return identifiable_information
+	pii = comprehend_service.detect_pii(card)
+	phi = comprehend_service.detect_phi(card)
+	return {
+				'name': pii['NAME'] if 'NAME' in pii.keys() else None,
+				'phone': pii['PHONE'] if 'PHONE' in pii.keys() else None,
+				'email': phi['EMAIL'] if 'EMAIL' in phi.keys() else None,
+				'website': phi['URL'] if 'URL' in phi.keys() else None,
+				'address': pii['ADDRESS'] if 'ADDRESS' in pii.keys() else None
+			}
 
 
 @app.route('/contacts/{image_id}/save-text', methods=['POST'], cors=True)
