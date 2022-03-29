@@ -17,4 +17,4 @@ COPY . .
 COPY .chalice .chalice
 
 EXPOSE 8001
-CMD chalice local --port=8001
+CMD chalice local --host=0.0.0.0 --port=8001
