@@ -1,0 +1,23 @@
+version: "3"
+services:
+  backend:
+    build: 
+      context: backend
+    # environment:
+    networks:
+      - cloudgroup   
+  frontend:
+    build:
+      context: frontend
+    networks:
+      - cloudgroup
+    environment:
+      - PORT=80    
+    depends_on: 
+      - backend
+    ports:
+      - "80:80"
+      
+networks:
+  cloudgroup:
+    driver: bridge      
