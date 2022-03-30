@@ -3,9 +3,6 @@ services:
   backend:
     build: 
       context: backend
-    volumes:
-      - .:/workspace:cached      
-    # environment:
     ports:
       - "8001:8001"    
     networks:
@@ -15,18 +12,14 @@ services:
   frontend:
     build:
       context: frontend
-    volumes:
-      - .:/workspace:cached      
     networks:
       - cloudgroup
     environment:
-      - PORT=80    
+      PORT: 80
     depends_on: 
       - backend
     ports:
-      - "80:80"
-    tty: true
-    stdin_open: true      
+      - "80:80"   
       
 networks:
   cloudgroup:
