@@ -1,8 +1,12 @@
+import { Page } from "../components/page";
+
 function LookupRoute() {
     return (
-        <div>
-            TBD
-        </div>
+        <Page>
+            <div>
+                TBD
+            </div>
+        </Page>
     );
 }
 

@@ -2,9 +2,7 @@ version: "3"
 services:
   backend:
     build: 
-      context: backend
-    ports:
-      - "8001:8001"    
+      context: backend   
     networks:
       - cloudgroup
     tty: true
@@ -16,11 +14,20 @@ services:
       - cloudgroup
     environment:
       PORT: 80
+      REACT_APP_API_URL: /api
     depends_on: 
       - backend
+  app:
+    build:
+      context: app
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - cloudgroup
     ports:
-      - "80:80"   
+      - "80:80"         
       
 networks:
   cloudgroup:
-    driver: bridge      
+    driver: bridge    

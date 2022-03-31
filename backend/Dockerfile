@@ -16,5 +16,5 @@ RUN aws configure set default.region us-east-1
 COPY . .
 COPY .chalice .chalice
 
-EXPOSE 8001
-CMD chalice local --host=0.0.0.0 --port=8001
+EXPOSE 80
+CMD chalice local --host=0.0.0.0 --port=80

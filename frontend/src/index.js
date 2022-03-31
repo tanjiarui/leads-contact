@@ -14,25 +14,62 @@ import {
 import UploadRoute from "./routes/upload";
 import LookupRoute from "./routes/lookup";
 import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material';
+import { Page } from './components/page';
+
+const theme = createTheme({
+    // palette: {
+    //     primary: {
+    //         main: "#ff7043",
+    //         light: "#ffa270",
+    //         dark: "#c63f17"
+    //     },
+    //     secondary: {
+    //         main: "#aeea00",
+    //         light: "#e4ff54",
+    //         dark: "#79b700"
+    //     },
+    // },
+    overrides: {
+        MuiCssBaseline: {
+            '@global': {
+                html: {
+                    WebkitFontSmoothing: 'auto',
+                },
+                body: {
+                    margin: 0
+                },
+                img: {
+                    verticalAlign: "middle"
+                },
+                svg: {
+                    verticalAlign: "middle"
+                }
+            },
+        },
+    },
+});
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <CssBaseline />
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="" element={<LookupRoute />} />
-          <Route path="upload" element={<UploadRoute />} />
-          <Route
-            path="*"
-            element={
-              <main style={{ padding: "1rem" }}>
-                <p>There's nothing here!</p>
-              </main>
-            }
-          />
-        </Route>
-      </Routes>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route path="" element={<LookupRoute />} />
+            <Route path="upload" element={<UploadRoute />} />
+            <Route
+              path="*"
+              element={
+                <Page>
+                  <p>There's nothing here!</p>
+                </Page>
+              }
+            />
+          </Route>
+        </Routes>
+      </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
