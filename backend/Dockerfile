@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir awscli
 # Just to make sure its installed alright
 RUN aws --version
 
-RUN pip install chalice boto3 pipenv
+RUN pip install chalice boto3 pipenv python-Levenshtein fuzzywuzzy
 
 RUN aws configure set default.region us-east-1
 

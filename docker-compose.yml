@@ -1,12 +1,12 @@
 version: "3"
 services:
   backend:
-    build: 
-      context: backend   
+    build:
+      context: backend
     networks:
       - cloudgroup
     tty: true
-    stdin_open: true      
+    stdin_open: true
   frontend:
     build:
       context: frontend
@@ -15,7 +15,7 @@ services:
     environment:
       PORT: 80
       REACT_APP_API_URL: /api
-    depends_on: 
+    depends_on:
       - backend
   app:
     build:
@@ -26,8 +26,8 @@ services:
     networks:
       - cloudgroup
     ports:
-      - "80:80"         
-      
+      - "80:80"
+
 networks:
   cloudgroup:
-    driver: bridge    
+    driver: bridge

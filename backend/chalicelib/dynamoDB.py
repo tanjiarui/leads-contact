@@ -1,4 +1,5 @@
 import boto3
+from fuzzywuzzy import fuzz
 
 
 class DB:
@@ -14,7 +15,7 @@ class DB:
 		response = self.table.scan()
 		result = list()
 		for item in response['Items']:
-			if name.lower() in item['username'].lower():
+			if fuzz.token_set_ratio(name.lower(), item['username'].lower()) > 50:
 				result.append(item)
 		return result if result else {'warning': 'no such item in db'}
 
