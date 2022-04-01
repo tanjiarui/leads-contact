@@ -1,5 +1,14 @@
 import React from 'react';
-import { Button, FormControl, Input, Typography, CircularProgress, FormGroup, TextField, alpha, Grid } from '@mui/material';
+import {
+    Typography,
+    alpha,
+    Grid,
+    TableContainer,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell
+} from '@mui/material';
 import { Page } from "../components/page";
 import api from '../lib/api';
 import { makeStyles, useTheme } from '@mui/styles';
@@ -19,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const Contact = ({ contact, onUpdated, onDeleted }) => {
-    console.log(contact)
     const [mode, setMode] = React.useState('view')
     const switchMode = () => {
         setMode(m => m === "view" ? "edit" : "view")
@@ -45,7 +53,7 @@ const Contact = ({ contact, onUpdated, onDeleted }) => {
                 </Grid>
                 <Grid item xs="auto">
                     <IconButton component="span" onClick={switchMode}>
-                        {mode === "edit" ? <Cancel />: <Edit />}
+                        {mode === "edit" ? <Cancel /> : <Edit />}
                     </IconButton>
                 </Grid>
                 <Grid item xs="auto">
@@ -65,7 +73,23 @@ const Contact = ({ contact, onUpdated, onDeleted }) => {
                             onUpdated(contact.id, r.Attributes)
                         }}
                     /> :
-                    <div>{contact.username}</div>
+                    <TableContainer component="div">
+                        <Table>
+                            <TableBody>
+                                {['username', 'email', 'address', 'phone', 'website'].map((key) => (
+                                    <TableRow
+                                        key={key}
+                                        sx={{ '& td, & th': { border: 0 } }}
+                                    >
+                                        <TableCell width="15%" align="right">
+                                            <Typography fontWeight={500} variant="body" component="span">{key}:</Typography>
+                                        </TableCell>
+                                        <TableCell>{contact[key]}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
             }
         </Paper>
     );
@@ -77,7 +101,6 @@ function LookupRoute() {
     const onSubmitQuery = async (e) => {
         e.preventDefault()
         api.Contact().find(query)
-            .then(r => { console.log(r); return r })
             .then(r => Array.isArray(r.data) ? r.data : [])
             .then(setContacts)
             .catch(console.log)
@@ -110,11 +133,22 @@ function LookupRoute() {
                     <SearchIcon />
                 </IconButton>
             </Paper>
-            {contacts.length === 0 ? <></> : <Divider sx={{ mt: 2, mb: 2 }} />}
             {
-                contacts.map(c =>
-                    <Contact key={c.id} contact={c} onUpdated={onUpdated} onDeleted={onDeleted}/>
-                )
+                contacts.length === 0 ?
+                    <></> :
+                    <>
+                        <Divider sx={{ mt: 2, mb: 2 }} />
+                        <Grid container direction={"column"} spacing={2}>
+                            {
+                                contacts.map(c =>
+                                    <Grid key={c.id} item xs={12}>
+                                        <Contact contact={c} onUpdated={onUpdated} onDeleted={onDeleted} />
+                                    </Grid>
+                                )
+                            }
+                        </Grid>
+                    </>
+
             }
         </Page>
     );
