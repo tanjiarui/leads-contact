@@ -4,6 +4,7 @@ from chalicelib import storage_service
 from chalicelib import recognition_service
 from chalicelib import comprehend_service
 from chalicelib import dynamoDB
+from chalicelib import iam
 
 #####
 # chalice app configuration
@@ -21,11 +22,13 @@ storage_service = storage_service.Storage(storage_location, access_key_id, secre
 recognition_service = recognition_service.Recognition(storage_service, access_key_id, secret_access_key)
 comprehend_service = comprehend_service.Comprehend(access_key_id, secret_access_key)
 db = dynamoDB.DB(access_key_id, secret_access_key)
-
+iam = iam.IAM(access_key_id, secret_access_key)
 
 ####
 # restful endpoints
 ####
+
+
 @app.route('/images', methods=['POST'], cors=True)
 def upload_image():
 	# processes file upload and saves file to storage service
@@ -56,7 +59,17 @@ def save_text(image_id):
 	# upload an item
 	# format of request body {name: '', phone: '', email: '', website: '', address: ''}
 	request_data = json.loads(app.current_request.raw_body)
-	item = {'id': image_id, 'username': request_data['name'], 'phone': request_data['phone'], 'email': request_data['email'], 'website': request_data['website'], 'address': request_data['address']}
+	user = iam.create_user(request_data['name'].replace(' ', '-'))
+	item = {
+		'id': image_id,
+		'username': request_data['name'],
+		'phone': request_data['phone'],
+		'email': request_data['email'],
+		'website': request_data['website'],
+		'address': request_data['address'],
+		'iam-user': user['iam-user'],
+		'access_id': user['access_id']
+	}
 	return db.insert_item(item)
 
 
@@ -71,13 +84,32 @@ def find_text():
 @app.route('/contacts/{image_id}/update-text', methods=['PUT'], cors=True)
 def update_text(image_id):
 	# update an item
-	# format of request body {'name', 'phone', 'email', 'website', 'address'}
+	# format of request body {'name', 'phone', 'email', 'website', 'address', 'access_id'}
 	request_data = json.loads(app.current_request.raw_body)
-	item = {'id': image_id, 'name': request_data['name'], 'phone': request_data['phone'], 'email': request_data['email'], 'website': request_data['website'], 'address': request_data['address']}
-	return db.update_item(item)
+	access_id = request_data['access_id']
+	item = db.find_id(image_id)
+	# access control
+	if access_id == item['access_id']:
+		item = {
+			'id': image_id,
+			'name': request_data['name'],
+			'phone': request_data['phone'],
+			'email': request_data['email'],
+			'website': request_data['website'],
+			'address': request_data['address']
+		}
+		return db.update_item(item)
+	else:
+		return {'error': 'permission denied'}
 
 
-@app.route('/contacts/{image_id}/delete-text', methods=['DELETE'], cors=True)
-def delete_text(image_id):
+@app.route('/contacts/{image_id}/{access_id}/delete-text', methods=['DELETE'], cors=True)
+def delete_text(image_id, access_id):
 	# delete an item
-	return db.delete_item(image_id)
+	item = db.find_id(image_id)
+	# access control
+	if access_id == item['access_id']:
+		iam.delete_user(item['iam-user'])
+		return db.delete_item(image_id)
+	else:
+		return {'error': 'permission denied'}

@@ -8,8 +8,10 @@ class DB:
 		self.table = dynamodb.Table('datastore')
 
 	def insert_item(self, item: dict):
-		response = self.table.put_item(Item=item)
-		return response
+		return self.table.put_item(Item=item)
+
+	def find_id(self, item_id: str):
+		return self.table.get_item(Key={'id': item_id})['Item']
 
 	def find_item(self, name: str):
 		response = self.table.scan()
