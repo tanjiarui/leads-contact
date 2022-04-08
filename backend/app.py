@@ -71,7 +71,7 @@ def save_text(image_id):
 		'access_id': user['access_id']
 	}
 	db.insert_item(item)
-	return {'iam-user': user['iam-user'], 'access_id': user['access_id']}
+	return {'access_id': user['access_id']}
 
 
 @app.route('/contacts/find-text', methods=['POST'], cors=True)
