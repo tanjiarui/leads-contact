@@ -37,5 +37,4 @@ class DB:
 		return response
 
 	def delete_item(self, item_id: str):
-		response = self.table.delete_item(Key={'id': item_id})
-		return response
+		return self.table.delete_item(Key={'id': item_id})

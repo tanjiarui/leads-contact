@@ -82,12 +82,11 @@ def find_text():
 	return db.find_item(request_data['name'])
 
 
-@app.route('/contacts/{image_id}/update-text', methods=['PUT'], cors=True)
-def update_text(image_id):
+@app.route('/contacts/{image_id}/{access_id}/update-text', methods=['PUT'], cors=True)
+def update_text(image_id, access_id):
 	# update an item
-	# format of request body {'name', 'phone', 'email', 'website', 'address', 'access_id'}
+	# format of request body {'name', 'phone', 'email', 'website', 'address'}
 	request_data = json.loads(app.current_request.raw_body)
-	access_id = request_data['access_id']
 	item = db.find_id(image_id)
 	# access control
 	if access_id == item['access_id']:
