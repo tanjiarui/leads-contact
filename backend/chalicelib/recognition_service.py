@@ -1,4 +1,5 @@
 import boto3
+from botocore.errorfactory import ClientError
 
 
 class Recognition:
@@ -7,15 +8,17 @@ class Recognition:
 		self.bucket_name = storage_service.get_storage_location()
 
 	def detect_text(self, file_name):
-		response = self.client.detect_text(
-			Image={
-				'S3Object': {
-					'Bucket': self.bucket_name,
-					'Name': file_name
+		try:
+			response = self.client.detect_text(
+				Image={
+					'S3Object': {
+						'Bucket': self.bucket_name,
+						'Name': file_name
+					}
 				}
-			}
-		)
-
+			)
+		except ClientError:
+			return {'error': 'unable to get object ' + file_name + ' from s3'}
 		lines = list()
 		for detection in response['TextDetections']:
 			if detection['Type'] == 'LINE':
@@ -23,5 +26,4 @@ class Recognition:
 					'text': detection['DetectedText'],
 					'confidence': detection['Confidence']
 				})
-
 		return lines
