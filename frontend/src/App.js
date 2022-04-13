@@ -10,7 +10,8 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { alpha } from '@mui/material';
+import { alpha, Snackbar } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +38,15 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       marginTop: theme.spacing(9)
     }
+  },
+  snack: {
+    marginTop: theme.spacing(7),
+    [theme.breakpoints.up('sm')]: {
+      marginTop: theme.spacing(8)
+    },
+    [theme.breakpoints.up('md')]: {
+      marginTop: theme.spacing(9)
+    }
   }
 }))
 
@@ -51,7 +61,19 @@ const pages = [
   }
 ];
 
+const Alert = React.forwardRef(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 function App() {
+  const context = React.useState({
+    accessId: null,
+    message: null,
+  })
+  const [state, setState] = context;
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const classes = useStyles()
   const navigate = useNavigate();
@@ -67,6 +89,10 @@ function App() {
     handleCloseNavMenu()
     navigate(url)
   };
+
+  const handleSnackClose = () => {
+    setState(s => ({ ...s, message: null }))
+  }
 
   return (
     <main className={classes.body} >
@@ -140,7 +166,19 @@ function App() {
         </Container>
       </AppBar>
       <Box className={classes.pageBox}>
-        <Outlet />
+        <Outlet context={context} />
+        <Snackbar
+          className={classes.snack}
+          autoHideDuration={3000}
+          onClose={handleSnackClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          open={Boolean(state.message)}
+          key="mainsnack"
+        >
+          <Alert onClose={handleSnackClose} severity="error" sx={{ width: '100%' }}>
+            {state.message || ''}
+          </Alert>
+        </Snackbar>
       </Box>
     </main>
   );

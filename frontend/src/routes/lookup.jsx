@@ -20,6 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ContactForm from '../components/contactForm';
 import { Cancel, Delete, Edit, PhotoCamera } from '@mui/icons-material';
+import { useOutletContext } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     img: {
@@ -29,13 +30,20 @@ const useStyles = makeStyles((theme) => ({
 
 const Contact = ({ contact, onUpdated, onDeleted }) => {
     const [mode, setMode] = React.useState('view')
+    const [state, setState] = useOutletContext();
     const switchMode = () => {
         setMode(m => m === "view" ? "edit" : "view")
     }
 
     const onDelete = async () => {
-        await api.Contact().delete(contact.id)
-            .then(() => onDeleted(contact.id))
+        await api.Contact().delete(contact.id, state.accessId)
+            .then((r) => {
+                if (r.data.error) {
+                    setState(s => ({ ...s, message: r.data.error }))   
+                } else {
+                    onDeleted(contact.id)
+                }
+            })
             .catch(console.log)
     }
 
@@ -67,11 +75,16 @@ const Contact = ({ contact, onUpdated, onDeleted }) => {
                     <ContactForm
                         initialValues={{ ...contact, name: contact.username }}
                         btnText={"Update"}
-                        onSubmit={(v) => api.Contact().update(contact.id, v)}
+                        onSubmit={(v) => api.Contact().update(contact.id, state.accessId, v)}
                         onSuccess={(r) => {
-                            setMode("view")
-                            onUpdated(contact.id, r.Attributes)
+                            if (r.error) {
+                                setState(s => ({ ...s, message: r.error }))
+                            } else {
+                                setMode("view")
+                                onUpdated(contact.id, r.Attributes)   
+                            }
                         }}
+                        onError={console.log}
                     /> :
                     <TableContainer component="div">
                         <Table>

@@ -76,12 +76,12 @@ class Contact extends Endpoint {
         return this.client.post(`find-text`, { name })
     }
 
-    delete(imageId) {
-        return this.client.delete(`${imageId}/delete-text`, {})
+    delete(imageId, access_id) {
+        return this.client.delete(`${imageId}/${access_id}/delete-text`, {})
     }
 
-    update(imageId, params) {
-        return this.client.put(`${imageId}/update-text`, params)
+    update(imageId, access_id, params) {
+        return this.client.put(`${imageId}/${access_id}/update-text`, params)
     }
 }
 

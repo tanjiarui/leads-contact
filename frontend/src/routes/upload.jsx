@@ -5,7 +5,7 @@ import { Page } from "../components/page";
 import api from '../lib/api';
 import { makeStyles, useTheme } from '@mui/styles';
 import { useProcess } from '../lib/hooks';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import ContactForm from '../components/contactForm';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,15 +47,21 @@ function UploadRoute() {
 
     React.useEffect(async () => {
         if (imageInfo) {
-            console.log(imageInfo)
             await detect(imageInfo.fileId)
                 .then(r => setForm(r.data))
                 .catch(console.log)
         }
-    }, [imageInfo])
+    }, [imageInfo]);
 
-    const theme = useTheme()
+    const [state,setState] = useOutletContext();
     const navigate = useNavigate();
+
+    const handleSuccess = (r) => {
+        setState((s) => ({...s, accessId: r.access_id}))
+        return navigate("/");
+    }
+    
+    const theme = useTheme()
     const classes = useStyles()
 
     return (
@@ -84,7 +90,8 @@ function UploadRoute() {
                         initialValues={form}
                         btnText={"Create"}
                         onSubmit={(v) => api.Contact().create(imageInfo.fileId, v)}
-                        onSuccess={(r) => navigate("/")}
+                        onSuccess={handleSuccess}
+                        onError={console.log}
                     />
                 </>
             }

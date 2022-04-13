@@ -26,7 +26,7 @@ const formSchema = yup.object({
 });
 
 
-const ContactForm = ({ initialValues, onSubmit ,onSuccess, btnText }) => {
+const ContactForm = ({ initialValues, onSubmit ,onSuccess, onError, btnText }) => {
 
     const formik = useFormik({
         initialValues: {
@@ -44,7 +44,7 @@ const ContactForm = ({ initialValues, onSubmit ,onSuccess, btnText }) => {
                         console.log(r)
                         onSuccess(r.data)
                     },
-                    console.log
+                    onError
                 );
             return true;
         }
