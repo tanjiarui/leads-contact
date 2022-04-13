@@ -43,6 +43,8 @@ def upload_image():
 def detect_text(image_id):
 	# image to text and extract Personally identifiable information
 	card = recognition_service.detect_text(image_id)
+	if isinstance(card, dict):
+		return card
 	pii = comprehend_service.detect_pii(card)
 	phi = comprehend_service.detect_phi(card)
 	return {
