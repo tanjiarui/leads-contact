@@ -15,8 +15,8 @@ app.debug = True
 #####
 # services initialization
 #####
-access_key_id = 'AKIAVPRXNHVE3Z7UU3AQ'
-secret_access_key = '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'
+access_key_id = 'AKIAVPRXNHVEX7JGFEUT'
+secret_access_key = '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'
 storage_location = 's3-bucket-terry'
 storage_service = storage_service.Storage(storage_location, access_key_id, secret_access_key)
 recognition_service = recognition_service.Recognition(storage_service, access_key_id, secret_access_key)
@@ -90,6 +90,8 @@ def update_text(image_id, access_id):
 	# format of request body {'name', 'phone', 'email', 'website', 'address'}
 	request_data = json.loads(app.current_request.raw_body)
 	item = db.find_id(image_id)
+	if 'warning' in item.keys():
+		return item
 	# access control
 	if access_id == item['access_id']:
 		item = {
@@ -109,6 +111,8 @@ def update_text(image_id, access_id):
 def delete_text(image_id, access_id):
 	# delete an item
 	item = db.find_id(image_id)
+	if 'warning' in item.keys():
+		return item
 	# access control
 	if access_id == item['access_id']:
 		iam.delete_user(item['iam-user'])

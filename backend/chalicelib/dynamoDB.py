@@ -11,7 +11,8 @@ class DB:
 		return self.table.put_item(Item=item)
 
 	def find_id(self, item_id: str):
-		return self.table.get_item(Key={'id': item_id})['Item']
+		result = self.table.get_item(Key={'id': item_id})
+		return result['Item'] if 'Item' in result.keys() else {'warning': 'no such item in db'}
 
 	def find_item(self, name: str):
 		response = self.table.scan()
