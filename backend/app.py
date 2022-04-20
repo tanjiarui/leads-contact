@@ -15,9 +15,9 @@ app.debug = True
 #####
 # services initialization
 #####
-access_key_id = 'AKIAVPRXNHVEX7JGFEUT'
-secret_access_key = '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'
-storage_location = 's3-bucket-terry'
+access_key_id = 'aws access key'
+secret_access_key = 'aws secret key'
+storage_location = 'bucket name'
 storage_service = storage_service.Storage(storage_location, access_key_id, secret_access_key)
 recognition_service = recognition_service.Recognition(storage_service, access_key_id, secret_access_key)
 comprehend_service = comprehend_service.Comprehend(access_key_id, secret_access_key)

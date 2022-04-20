@@ -1,15 +1,15 @@
 import boto3
-from botocore.errorfactory import ClientError
 from botocore.client import Config
+from botocore.errorfactory import ClientError
 
 
 class Recognition:
 	def __init__(self, storage_service, access_key_id, secret_access_key):
 		self.client = boto3.client(
-			'rekognition', 
-			aws_access_key_id=access_key_id, 
+			'rekognition',
+			aws_access_key_id=access_key_id,
 			aws_secret_access_key=secret_access_key,
-			config = Config(connect_timeout=5, retries={'max_attempts': 0})
+			config=Config(connect_timeout=5, retries={'max_attempts': 0})
 			)
 		self.bucket_name = storage_service.get_storage_location()
 
